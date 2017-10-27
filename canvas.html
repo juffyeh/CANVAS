@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <title>CANVAS画板</title>
+</head>
+<style type="text/css">
+    *{margin:0;padding:0;}
+    .icon{
+        width: 1em; height: 1em;
+        vertical-align: -0.15em;
+        fill: currentColor;
+        overflow: hidden;
+    }
+    #app{
+        display: block;
+        background: #ddd;
+    }
+    .action{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 4px;
+        background: #1B4472;
+        text-align: center;
+    }
+    .action svg{
+        width: 26px;
+        height: 26px;
+        margin: 0 10px;
+    }
+    .action .blackpen{
+        fill: #000;
+    }
+    .action .redpen{
+        fill: red;
+    }
+</style>
+<body>
+    <div class="action">
+        <label><input type="radio" style="display:none;" name="penType" value="pen" checked="checked"><svg class="icon blackpen"><use xlink:href="#icon-huabi"></use></svg></label>
+        <label><input type="radio" style="display:none;" name="penType" value="redpen"><svg class="icon redpen"><use xlink:href="#icon-huabi"></use></svg></label>
+        <label><input type="radio" style="display:none;" name="penType" value="eraser"><svg class="icon"><use xlink:href="#icon-xiangpi"></use></svg></label>
+    </div>
+    <canvas id="app"></canvas>
+</body>
+<script src="//at.alicdn.com/t/font_443236_hpyjlqwczhaj1yvi.js"></script>
+<script type="text/javascript">
+    let canvas = document.querySelector('#app')
+    let clientWidth = document.documentElement.clientWidth
+    let clientHeight = document.documentElement.clientHeight
+    canvas.width = clientWidth
+    canvas.height = clientHeight
+    let context = canvas.getContext("2d")
+    let previouspoint
+    canvas.addEventListener('touchmove',function(e){
+        e.preventDefault()
+        let penType = document.querySelector('input[name="penType"]:checked').value
+        let {pageX,pageY} = e.touches[0]
+        if(penType === 'pen'){
+            if(previouspoint){
+                context.strokeStyle = 'black'
+                context.beginPath();
+                context.moveTo(previouspoint.pageX,previouspoint.pageY);
+                context.lineTo(pageX,pageY);
+                context.stroke()
+            }
+            previouspoint = {pageX,pageY}
+        }else if(penType === 'redpen'){
+            if(previouspoint){
+                context.strokeStyle = 'red'
+                context.beginPath();
+                context.moveTo(previouspoint.pageX,previouspoint.pageY);
+                context.lineTo(pageX,pageY);
+                context.stroke()
+            }
+            previouspoint = {pageX,pageY}
+        }else if(penType === 'eraser'){
+            context.clearRect(pageX-8,pageY-8,16, 16)
+        }
+        })
+    canvas.addEventListener('touchend', function(){
+        previouspoint = null
+    })
+</script>
+</html>
